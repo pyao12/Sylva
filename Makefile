@@ -1,10 +1,8 @@
-MINGW_GCC = x86_64-w64-mingw32-gcc
-QEMU = qemu-system-x86_64
-MINGW_GCC_FLAGS = -Wall -Wextra -e efi_main -nostdinc -nostdlib  -fno-builtin -Wl,--subsystem,10
-
 all: 
 	mkdir -p build
-	x86_64-w64-mingw32-gcc $(MINGW_GCC_FLAGS) -o build/BOOTX64.EFI boot.c
+	gcc -Ignu-efi/inc -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fshort-wchar -mno-red-zone -maccumulate-outgoing-args -c boot.c -o build/boot.o
+	ld -shared -Bsymbolic -Lgnu-efi/x86_64/lib -Lgnu-efi/x86_64/gnuefi -Tgnu-efi/gnuefi/elf_x86_64_efi.lds gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o build/boot.o -o build/boot.so -lgnuefi -lefi
+	objcopy -j .text -j .sdata -j .data -j .rodata -j .dynamic -j .dynsym  -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --output-target efi-app-x86_64 --subsystem=10 build/boot.so build/BOOTX64.EFI
 
 vdir: all
 	mkdir -p vdir
@@ -12,7 +10,9 @@ vdir: all
 	cp build/BOOTX64.EFI vdir/EFI/BOOT
 
 run: vdir
-	$(QEMU) -bios /usr/share/ovmf/OVMF.fd -net none -drive file=fat:rw:vdir,index=0,format=vvfat -serial stdio
+	qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -net none -drive file=fat:rw:vdir,index=0,format=vvfat -serial file:serial.log
 
 clean:
 	rm -rf build vdir
+
+.PHONY: all vdir run clean
