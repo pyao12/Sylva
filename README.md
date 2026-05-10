@@ -3,3 +3,5 @@
 Sylva源于拉丁语“森林”，就是本操作系统的宗旨：简单、绿色、清新。
 
 本操作系统在[GPL-3.0](LICENSE)协议下开源，欢迎各位fork二次开发，或是为提交Issues或PR做出贡献。
+
+你可能还需要看看：[字体使用声明](fonts/resources/README.md)
