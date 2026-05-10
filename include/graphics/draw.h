@@ -3,4 +3,4 @@
 #include <efi.h>
 #include <graphics/context.h>
 
-void draw_pixel(unsigned int x, unsigned int y, EFI_GRAPHICS_OUTPUT_BLT_PIXEL color);
+void draw_pixel(unsigned int x, unsigned int y, EFI_GRAPHICS_OUTPUT_BLT_PIXEL color); // 画像素

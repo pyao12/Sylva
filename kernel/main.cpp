@@ -4,8 +4,10 @@
 #include <graphics/draw.h>
 #include <fonts/pixel_font.h>
 #include <serial.h>
+#include <common.h>
 
 inline void init_gop() {
+    // 初始化 GOP
     EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
     uefi_call_wrapper((void*)ST->BootServices->SetWatchdogTimer, 4, 0, 0, 0, NULL);
@@ -14,6 +16,7 @@ inline void init_gop() {
 }
 
 inline void init_serial() {
+    // 初始化串行驱动
     EFI_SERIAL_IO_PROTOCOL *SerialIo = NULL;
     EFI_GUID gEfiSerialIoProtocolGuid = EFI_SERIAL_IO_PROTOCOL_GUID;
     EFI_HANDLE *SerialHandles = NULL;
@@ -41,15 +44,15 @@ extern "C" void kernel_main() {
     init_gop();
     init_serial();
 
+    // 都用uefi_call_wrapper，不用会PF，不知道为什么
     uefi_call_wrapper((void*)ST->ConOut->SetCursorPosition, 3, ST->ConOut, 0, 5);
     uefi_call_wrapper((void*)ST->ConOut->OutputString, 2, ST->ConOut, L"Kernel is running!\n");
 
     uefi_call_wrapper((void*)ST->ConOut->ClearScreen, 1, ST->ConOut);
-    serial_write("\n\n"); // 防止和前面串了
+    serial_write("\n\n"); // 防止和前面串了serial.log看不清
 
-    // pf_print_char('k', 10, 10);
-    pf_print("Welcome to Sylva OS!", 10, 10);
-    serial_write("Hello from serial!\n");
-    serial_write("Hello from serial line 2!");
-    while (1);
+    pf_print("Welcome to Sylva OS!\n");
+    serial_write(" Kernel prepared well, start loop.\n");
+
+    while (1) ASM ("hlt"); // 《30天》看多了 (doge
 }

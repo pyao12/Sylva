@@ -12,7 +12,7 @@ _bd:
 
 all: _bd $(OBJ)
 	@echo "* Linking EFI..."
-	@ld $(LDFLAGS) gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o build/boot.o build/graphics/draw.o build/graphics/context.o build/kernel/main.o build/kernel/serial.o build/fonts/pixel_font.o -o build/boot.so $(LDLIBS)
+	@ld $(LDFLAGS) gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o $(OBJ) -o build/boot.so $(LDLIBS)
 	@objcopy -j .text -j .sdata -j .data -j .rodata -j .dynamic -j .dynsym -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --output-target efi-app-x86_64 --subsystem=10 build/boot.so build/BOOTX64.EFI
 
 build/%.o: %.c
